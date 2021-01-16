@@ -1,0 +1,17 @@
+# Original script:
+# https://github.com/maldevel/blue-team/blob/master/hardening/debian-server-9-hardening-lvl1.sh
+
+---
+- hosts: all
+  pre_tasks:
+    - name: Check if port 3000 is open
+      shell: iptables -S | grep -w "3000"
+      ignore_errors: yes
+      become: yes
+      register: port_open
+    - name: Open port 3000
+      shell: iptables -A INPUT -p tcp --dport 3000 -j ACCEPT
+      become: yes
+      when: port_open.stdout == ""
+  tasks:
+    - include_tasks: tasks/install.yaml

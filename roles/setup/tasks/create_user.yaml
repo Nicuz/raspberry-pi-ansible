@@ -1,0 +1,8 @@
+- name: Add personal user and assign it to the "wheel" group
+  user:
+    name: "{{ personal.user }}"
+    password: "{{ personal.password | password_hash('sha512') }}"
+    update_password: on_create
+    groups: wheel
+    shell: /bin/bash
+    state: present

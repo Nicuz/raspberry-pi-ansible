@@ -1,0 +1,46 @@
+- block:
+  - name: Backup /etc/bash.bashrc
+    copy:
+      src: /etc/bash.bashrc
+      dest: /etc/bash.bashrc.bak
+      remote_src: yes
+  
+  - name: Backup /etc/profile
+    copy:
+      src: /etc/profile
+      dest: /etc/profile.bak
+      remote_src: yes
+  
+  - name: Check "umask 027" in /etc/bash.bashrc
+    lineinfile:
+      path: /etc/bash.bashrc
+      regexp: '^umask 027$'
+      state: absent
+      backup: yes
+    check_mode: yes
+    changed_when: false
+    register: check_umask
+  
+  - name: Add "umask 027" in /etc/bash.bashrc
+    lineinfile:
+      dest: /etc/bash.bashrc
+      line: "\numask 027"
+    when: not check_umask.found
+
+  - name: Check "umask 027" in /etc/profile
+    lineinfile:
+      path: /etc/profile
+      regexp: '^umask 027$'
+      state: absent
+      backup: yes
+    check_mode: yes
+    changed_when: false
+    register: check_umask
+  
+  - name: Add "umask 027" in /etc/profile
+    lineinfile:
+      dest: /etc/profile
+      line: "\numask 027"
+    when: not check_umask.found
+  
+  become: yes

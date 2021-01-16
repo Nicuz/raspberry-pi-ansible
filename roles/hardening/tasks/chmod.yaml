@@ -1,0 +1,39 @@
+- block:
+  - name: chmod 0750 /var/run/dbus
+    file:
+      path: /var/run/dbus
+      state: directory
+      mode: 0750
+
+  - name: chmod 0750 /run/sshd
+    file:
+      path: /run/sshd
+      state: directory
+      mode: 0750
+
+  - name: chmod 0750 /run/systemd
+    file:
+      path: /run/systemd
+      state: directory
+      mode: 0750
+
+  - name: chmod 0750 /run/systemd/netif
+    file:
+      path: /run/systemd/netif
+      state: directory
+      mode: 0750
+
+  - name: Find dirs under /home
+    find:
+      paths: /home
+      file_type: directory
+    register: results
+
+  - name: chmod 0750 /home/*/
+    file:
+      path: "{{ item.path }}"
+      state: directory
+      mode: 0750
+    with_items: "{{ results.files }}"
+  
+  become: yes

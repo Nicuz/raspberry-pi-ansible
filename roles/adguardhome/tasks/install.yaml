@@ -1,0 +1,22 @@
+- name: Download AdGuardHome
+  get_url:
+    url: https://static.adguard.com/adguardhome/release/AdGuardHome_linux_arm.tar.gz
+    dest: /tmp/AdGuardHome_linux_arm.tar.gz
+
+- name: Extract AdGuardHome_linux_arm.tar.gz
+  unarchive:
+    src: /tmp/AdGuardHome_linux_arm.tar.gz
+    dest: /home/{{ adguardhome.user_install }}
+    remote_src: yes
+
+- name: Remove AdGuardHome_linux_arm.tar.gz
+  file:
+    path: /tmp/AdGuardHome_linux_arm.tar.gz
+    state: absent
+  become: yes
+
+- name: Install AdGuardHome
+  shell: ./AdGuardHome -s install
+  args:
+    chdir: /home/{{ adguardhome.user_install }}
+  become: yes

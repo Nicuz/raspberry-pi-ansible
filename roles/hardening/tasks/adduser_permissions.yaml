@@ -1,0 +1,7 @@
+- name: Set DIR_MODE=0750 in /etc/adduser.conf
+  lineinfile:
+    path: /etc/adduser.conf
+    regexp: "^DIR_MODE=[0-9]+$"
+    line: "DIR_MODE=0750"
+    backup: yes
+  become: yes

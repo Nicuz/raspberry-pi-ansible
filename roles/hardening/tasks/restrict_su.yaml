@@ -1,0 +1,15 @@
+- block:
+  - name: Backup /etc/pam.d/su
+    copy:
+      src: /etc/pam.d/su
+      dest: /etc/pam.d/su.bak
+      remote_src: yes
+  
+  - name: Edit /etc/pam.d/su
+    lineinfile:
+      path: /etc/pam.d/su
+      regexp: "^#.*auth.*required.*pam_wheel.so$"
+      line: "auth required pam_wheel.so group=wheel debug"
+      backup: yes
+  
+  become: yes

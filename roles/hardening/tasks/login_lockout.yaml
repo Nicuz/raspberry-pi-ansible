@@ -1,0 +1,24 @@
+- block:
+  - name: Backup /etc/pam.d/common-auth
+    copy:
+      src: /etc/pam.d/common-auth
+      dest:  /etc/pam.d/common-auth.bak
+      remote_src: yes
+
+  - name: Check if login lockout is already set
+    lineinfile:
+      path: /etc/pam.d/common-auth
+      regexp: '^auth required pam_tally2.so onerr=fail audit silent deny=[0-9]+ unlock_time=[0-9]+$'
+      state: absent
+      backup: yes
+    check_mode: yes
+    changed_when: false
+    register: check_lockout
+  
+  - name: Enable login lockout for 120s after 5 failed attempts
+    lineinfile:
+      dest: /etc/pam.d/common-auth
+      line: "\nauth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=120"
+    when: not check_lockout.found
+  
+  become: yes

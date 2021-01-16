@@ -1,0 +1,4 @@
+- name: Ensure that "wheel" group exists
+  group:
+    name: wheel
+    state: present

@@ -1,0 +1,11 @@
+ansible_host: IP_ADDRESS
+ansible_user: LOGIN_USER
+ansible_ssh_pass: LOGIN_PASSWORD
+ansible_become_pass: ROOT_PASSWORD
+
+personal:
+  user: USERNAME
+  password: PASSWORD
+
+adguardhome:
+  user_install: USERNAME

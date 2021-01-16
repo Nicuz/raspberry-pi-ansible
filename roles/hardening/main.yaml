@@ -1,0 +1,19 @@
+# Original script:
+# https://github.com/maldevel/blue-team/blob/master/hardening/debian-server-9-hardening-lvl1.sh
+
+---
+- hosts: all
+  pre_tasks:
+    - name: Dummy command just to let the role fail if user has no sudo privileges
+      shell: whoami
+      become: yes
+  tasks:
+    - include_tasks: tasks/update.yaml
+    - include_tasks: tasks/chmod.yaml
+    - include_tasks: tasks/adduser_permissions.yaml
+    - include_tasks: ../setup/tasks/check_wheel.yaml
+    - include_tasks: tasks/restrict_su.yaml
+    - include_tasks: ../setup/tasks/wheel_sudoers.yaml
+    - include_tasks: tasks/umask.yaml
+    - include_tasks: tasks/login_lockout.yaml
+    - include_tasks: tasks/iptables.yaml

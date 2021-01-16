@@ -1,0 +1,11 @@
+# Original script:
+# https://github.com/maldevel/blue-team/blob/master/hardening/debian-server-9-hardening-lvl1.sh
+
+---
+- hosts: all
+  pre_tasks:
+    - include_tasks: tasks/check_wheel.yaml
+  tasks:
+    - include_tasks: tasks/create_user.yaml
+    - include_tasks: tasks/wheel_sudoers.yaml
+  become: yes

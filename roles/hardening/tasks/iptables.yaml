@@ -1,0 +1,82 @@
+- block:
+  - name: Install iptables-persistent
+    apt:
+      name: iptables-persistent
+      state: present
+  
+  - name: Enable netfilter-persistent service
+    systemd:
+      enabled: yes
+      name: netfilter-persistent
+
+  - name: Reset iptables
+    shell: |
+      iptables -F
+      iptables -X
+      iptables -Z
+  
+  - name: Reset ip6tables
+    shell: |
+      ip6tables -F
+      ip6tables -X
+      ip6tables -Z
+  
+  - name: Βlock null packets (DoS)
+    shell: iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+  
+  - name: Block syn-flood attacks (DoS)
+    shell: iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
+  
+  - name: Block XMAS packets (DoS)
+    shell: iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+  
+  - name: Allow internal traffic on the loopback device
+    shell: iptables -A INPUT -i lo -j ACCEPT
+  
+  - name: Allow ICMP
+    shell: iptables -A INPUT -p icmp -j ACCEPT
+
+  - name: Allow SSH
+    shell: iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+  - name: Allow HTTP
+    shell: iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+  - name: Allow HTTPS
+    shell: iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+  - name: Allow DNS
+    shell: |
+      iptables -A INPUT -p tcp --dport 53 -j ACCEPT
+      iptables -A INPUT -p udp --dport 53 -j ACCEPT
+  
+  - name: Allow DHCP
+    shell: |
+      iptables -A INPUT -p tcp --dport 67 -j ACCEPT
+      iptables -A INPUT -p udp --dport 67 -j ACCEPT
+      iptables -A INPUT -p tcp --dport 68 -j ACCEPT
+      iptables -A INPUT -p udp --dport 68 -j ACCEPT
+
+  - name: Allow DoT/DoH
+    shell: |
+      iptables -A INPUT -p tcp --dport 853 -j ACCEPT
+      iptables -A INPUT -p udp --dport 853 -j ACCEPT
+
+  - name: Allow established connections
+    shell: iptables -I INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+  - name: Default deny policy
+    shell: |
+      iptables -P INPUT DROP
+      iptables -P OUTPUT ACCEPT
+      iptables -P FORWARD DROP
+      ip6tables -P INPUT DROP
+      ip6tables -P OUTPUT DROP
+      ip6tables -P FORWARD DROP
+
+  - name: Save rules
+    shell: |
+      iptables-save > /etc/iptables/rules.v4
+      ip6tables-save > /etc/iptables/rules.v6
+
+  become: yes

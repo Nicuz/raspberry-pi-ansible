@@ -1,0 +1,14 @@
+- name: Check if members of wheel group can use sudo
+  lineinfile:
+    path: /etc/sudoers
+    regexp: '^%wheel\s+ALL=\(ALL:ALL\)\s+ALL$'
+    state: absent
+  check_mode: yes
+  changed_when: false
+  register: test_grep
+  
+- name: Enable sudo for members of wheel group
+  lineinfile:
+    dest: /etc/sudoers
+    line: "\n#Enable sudo for members of wheel group\n%wheel  ALL=(ALL:ALL) ALL"
+  when: not test_grep.found
